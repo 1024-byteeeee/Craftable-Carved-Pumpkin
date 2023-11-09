@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "craftable_carved_pumpkin",
+  "version": "${version}",
+  "name": "Craftable Carved Pumpkin",
+  "description": "Players can use shears and pumpkins to craft carved pumpkins, and each crafting reduces the durability of the shears by 1",
+  "authors": [
+    "1024_byteeeee"
+  ],
+  "contact": {
+    "homepage": "https://github.com/Minecraft-AMS",
+    "sources": "https://github.com/1024-byteeeee/Craftable-Carved-Pumpkin"
+  },
+  "license": "LGPL-3.0",
+  "icon": "assets/craftable_carved_pumpkin/craftable_carved_pumpkin.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "top.byteeeee.craftable_carved_pumpkin.CraftableCarvedPumpkin"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.14.4",
+    "fabric": "*",
+    "minecraft": "1.18.2"
+  }
+}
