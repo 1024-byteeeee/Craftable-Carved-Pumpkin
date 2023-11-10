@@ -1,9 +1,10 @@
 
-package top.byteeeee.craftable_carved_pumpkin.SpecialCraftingRecipe;
+package top.byteeeee.craftable_carved_pumpkin.specialCraftingRecipe;
 
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.SpecialCraftingRecipe;
 import net.minecraft.util.Identifier;
@@ -23,7 +24,6 @@ public class PumpkinScissorsRecipe extends SpecialCraftingRecipe {
     }
 
     private int shearsSlot = 0;
-    private boolean isFirstCraft = true;
     ItemStack shearsStack = new ItemStack(Items.SHEARS);
     ItemStack carvedStack = new ItemStack(Items.CARVED_PUMPKIN);
 
@@ -55,27 +55,41 @@ public class PumpkinScissorsRecipe extends SpecialCraftingRecipe {
                 if (stack.getItem() == Items.PUMPKIN) {
                     hasPumpkin = true;
                 } else if (stack.getItem().getDefaultStack().getItem() == Items.SHEARS) {
+                    NbtCompound nbtTag = stack.getOrCreateNbt();
+                    shearsStack.setNbt(nbtTag);
                     hasShears = true;
                     shearsSlot = i;
                 }
             }
         }
         if (hasPumpkin && hasShears && count == 2) {
-            if (isFirstCraft) {
-                isFirstCraft = false;
+            if (shearsStack.getDamage() >= shearsStack.getMaxDamage() && shearsStack.isDamageable()) {
+                inv.setStack(shearsSlot, ItemStack.EMPTY);
+                shearsStack = ItemStack.EMPTY;
             } else {
-                if (shearsStack.getDamage() >= shearsStack.getMaxDamage() && shearsStack.isDamageable()) {
-                    inv.setStack(shearsSlot, ItemStack.EMPTY);
-                    shearsStack = ItemStack.EMPTY;
-                    shearsStack = new ItemStack(Items.SHEARS);
-                } else {
-                    shearsStack.damage(1, new Random(), null);
-                }
-                isFirstCraft = true;
+                return carvedStack = new ItemStack(Items.CARVED_PUMPKIN);
             }
-            return carvedStack = new ItemStack(Items.CARVED_PUMPKIN);
         }
         return ItemStack.EMPTY;
+    }
+
+    @Override
+    public DefaultedList<ItemStack> getRemainder(CraftingInventory inv) {
+        DefaultedList<ItemStack> list = DefaultedList.ofSize(inv.size(), ItemStack.EMPTY);
+        for (int i = 0; i < inv.size(); i++) {
+            ItemStack stack = inv.getStack(i);
+            if (i == shearsSlot && stack.getItem() == Items.SHEARS) {
+                ItemStack damagedShears = stack.copy();
+                damagedShears.setNbt(stack.getNbt());
+                damagedShears.damage(1, new Random(), null);
+                if (damagedShears.getDamage() >= shearsStack.getMaxDamage() && shearsStack.isDamageable()) {
+                    inv.setStack(shearsSlot, ItemStack.EMPTY);
+                } else if (damagedShears.isDamaged()) {
+                    list.set(i, damagedShears);
+                }
+            }
+        }
+        return list;
     }
 
     @Override
@@ -84,12 +98,8 @@ public class PumpkinScissorsRecipe extends SpecialCraftingRecipe {
     }
 
     @Override
-    public DefaultedList<ItemStack> getRemainder(CraftingInventory inv) {
-        DefaultedList<ItemStack> list = DefaultedList.ofSize(9, ItemStack.EMPTY);
-        ItemStack tempStack = new ItemStack(Items.SHEARS);
-        tempStack.setDamage(shearsStack.getDamage());
-        list.set(shearsSlot, tempStack);
-        return list;
+    public boolean isIgnoredInRecipeBook() {
+        return true;
     }
 
     @Override

@@ -7,7 +7,8 @@ import net.minecraft.recipe.SpecialRecipeSerializer;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import top.byteeeee.craftable_carved_pumpkin.SpecialCraftingRecipe.PumpkinScissorsRecipe;
+
+import top.byteeeee.craftable_carved_pumpkin.specialCraftingRecipe.PumpkinScissorsRecipe;
 
 public class CraftableCarvedPumpkin implements ModInitializer {
 
