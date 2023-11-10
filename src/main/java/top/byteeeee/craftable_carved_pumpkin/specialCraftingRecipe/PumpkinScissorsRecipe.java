@@ -55,8 +55,8 @@ public class PumpkinScissorsRecipe extends SpecialCraftingRecipe {
                 if (stack.getItem() == Items.PUMPKIN) {
                     hasPumpkin = true;
                 } else if (stack.getItem().getDefaultStack().getItem() == Items.SHEARS) {
-                    NbtCompound nbtTag = stack.getOrCreateNbt();
-                    shearsStack.setNbt(nbtTag);
+                    NbtCompound nbtTag = stack.getOrCreateTag();
+                    shearsStack.setTag(nbtTag);
                     hasShears = true;
                     shearsSlot = i;
                 }
@@ -80,7 +80,7 @@ public class PumpkinScissorsRecipe extends SpecialCraftingRecipe {
             ItemStack stack = inv.getStack(i);
             if (i == shearsSlot && stack.getItem() == Items.SHEARS) {
                 ItemStack damagedShears = stack.copy();
-                damagedShears.setNbt(stack.getNbt());
+                damagedShears.setTag(stack.getTag());
                 damagedShears.damage(1, new Random(), null);
                 if (damagedShears.getDamage() >= shearsStack.getMaxDamage() && shearsStack.isDamageable()) {
                     inv.setStack(shearsSlot, ItemStack.EMPTY);
