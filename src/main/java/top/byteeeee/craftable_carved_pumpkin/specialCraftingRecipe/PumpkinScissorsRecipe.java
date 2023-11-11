@@ -5,22 +5,25 @@ import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.SpecialCraftingRecipe;
+import net.minecraft.recipe.book.CraftingRecipeCategory;
+import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 
 import com.google.common.collect.Lists;
 
 import java.util.ArrayList;
-import java.util.Random;
 
 import static top.byteeeee.craftable_carved_pumpkin.CraftableCarvedPumpkin.PUMPKIN_SCISSORS_RECIPE_SERIALIZER;
 
 public class PumpkinScissorsRecipe extends SpecialCraftingRecipe {
-    public PumpkinScissorsRecipe(Identifier id) {
-        super(id);
+    public PumpkinScissorsRecipe(Identifier id, CraftingRecipeCategory category) {
+        super(id, category);
     }
 
     private int shearsSlot = 0;
@@ -44,7 +47,7 @@ public class PumpkinScissorsRecipe extends SpecialCraftingRecipe {
     }
 
     @Override
-    public ItemStack craft(CraftingInventory inv) {
+    public ItemStack craft(CraftingInventory inv, DynamicRegistryManager registryManager) {
         boolean hasPumpkin = false;
         boolean hasShears = false;
         int count = 0;
@@ -55,8 +58,8 @@ public class PumpkinScissorsRecipe extends SpecialCraftingRecipe {
                 if (stack.getItem() == Items.PUMPKIN) {
                     hasPumpkin = true;
                 } else if (stack.getItem().getDefaultStack().getItem() == Items.SHEARS) {
-                    NbtCompound nbtTag = stack.getOrCreateTag();
-                    shearsStack.setTag(nbtTag);
+                    NbtCompound nbtTag = stack.getOrCreateNbt();
+                    shearsStack.setNbt(nbtTag);
                     hasShears = true;
                     shearsSlot = i;
                 }
@@ -80,8 +83,8 @@ public class PumpkinScissorsRecipe extends SpecialCraftingRecipe {
             ItemStack stack = inv.getStack(i);
             if (i == shearsSlot && stack.getItem() == Items.SHEARS) {
                 ItemStack damagedShears = stack.copy();
-                damagedShears.setTag(stack.getTag());
-                damagedShears.damage(1, new Random(), null);
+                damagedShears.setNbt(stack.getNbt());
+                damagedShears.damage(1, Random.create(), null);
                 if (damagedShears.getDamage() >= shearsStack.getMaxDamage() && shearsStack.isDamageable()) {
                     inv.setStack(shearsSlot, ItemStack.EMPTY);
                 } else if (damagedShears.isDamaged()) {
@@ -90,6 +93,11 @@ public class PumpkinScissorsRecipe extends SpecialCraftingRecipe {
             }
         }
         return list;
+    }
+
+    @Override
+    public DefaultedList<Ingredient> getIngredients() {
+        return super.getIngredients();
     }
 
     @Override
